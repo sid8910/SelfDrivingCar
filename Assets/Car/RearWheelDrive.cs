@@ -1,9 +1,14 @@
 ﻿using UnityEngine;
-using System.Collections;
+using SocketIO;
+using System.Collections.Generic;
+using System;
 
 public class RearWheelDrive : MonoBehaviour {
 
-	private WheelCollider[] wheels;
+    private SocketIOComponent _socket;
+    public Camera FrontFacingCamera;
+
+    private WheelCollider[] wheels;
 
 	public float maxAngle = 30;
 	public float maxTorque = 300;
@@ -12,7 +17,12 @@ public class RearWheelDrive : MonoBehaviour {
 	// here we find all the WheelColliders down in the hierarchy
 	public void Start()
 	{
-		wheels = GetComponentsInChildren<WheelCollider>();
+
+        _socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
+        _socket.On("open", OnOpen);
+        _socket.On("move", OnMove);
+
+        wheels = GetComponentsInChildren<WheelCollider>();
 
 		for (int i = 0; i < wheels.Length; ++i) 
 		{
@@ -32,11 +42,43 @@ public class RearWheelDrive : MonoBehaviour {
 		}
 	}
 
-	// this is a really simple approach to updating wheels
-	// here we simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero
-	// this helps us to figure our which wheels are front ones and which are rear
-	public void Update()
+
+    void OnOpen(SocketIOEvent obj)
+    {
+        Debug.Log("Connection Open");
+        EmitTelemetry(obj);
+    }
+
+    void OnMove(SocketIOEvent obj)
+    {
+        EmitTelemetry(obj);
+        JSONObject jsonObject = obj.data;
+        string key = jsonObject.GetField("key").str;
+
+        //float stearingAngle = JSONObject.GetField("stearing_angle");
+        //float torque = JSONObject.GetField("torque_val");
+        //Update(stearingAngle, torque);
+    }
+
+    void EmitTelemetry(SocketIOEvent obj)
+    {
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data["move"] = "true";
+            data["image"] = Convert.ToBase64String(CameraHelper.CaptureFrame(FrontFacingCamera));
+            _socket.Emit("telemetry", new JSONObject(data));
+        });
+    }
+
+    // this is a really simple approach to updating wheels
+    // here we simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero
+    // this helps us to figure our which wheels are front ones and which are rear
+
+
+    public void Update()
 	{
+        
 		float angle = maxAngle * Input.GetAxis("Horizontal");
 		float torque = maxTorque * Input.GetAxis("Vertical");
 
