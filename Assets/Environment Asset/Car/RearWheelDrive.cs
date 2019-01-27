@@ -51,35 +51,14 @@ public class RearWheelDrive : MonoBehaviour {
 
     void OnMove(SocketIOEvent obj)
     {
-        int w_axis = 0;
-        int a_vert = 0;
-
-
         EmitTelemetry(obj);
         JSONObject jsonObject = obj.data;
-        string key = jsonObject.GetField("key").str;
-
-        if (key == "w")
-        {
-             w_axis = 1;
-        }
-        else if (key == "s")
-        {
-             w_axis = -1;
-        }
-        else if (key == "a")
-        {
-             a_vert = 1;
-        }
-        else if (key == "d")
-        {
-            a_vert = 1;
-        }
-        else { }
+        string steer_angle = jsonObject.GetField("steer_angle").str;
+        string toq = jsonObject.GetField("steer_angle").str;
 
         //float stearingAngle = JSONObject.GetField("stearing_angle");
         //float torque = JSONObject.GetField("torque_val");
-        minma(w_axis, a_vert);
+        minma(steer_angle, toq);
     }
 
     void EmitTelemetry(SocketIOEvent obj)
@@ -98,14 +77,16 @@ public class RearWheelDrive : MonoBehaviour {
     // this helps us to figure our which wheels are front ones and which are rear
 
 
-    public void minma(int w_axis, int a_vert)
+    public void minma(string w_axis, string a_vert)
 	{
 
         //float angle = maxAngle * Input.GetAxis("Horizontal");
         //float torque = maxTorque * Input.GetAxis("Vertical");
+        float flt1 = float.Parse(w_axis);
+        float flt2 = float.Parse(a_vert);
 
-        float angle = maxAngle * w_axis;
-        float torque = maxTorque * a_vert;
+        float angle = maxAngle * flt1;
+        float torque = maxTorque * flt2;
 
 		foreach (WheelCollider wheel in wheels)
 		{
