@@ -15,7 +15,7 @@ public class RoadCreator : MonoBehaviour {
 
     public void UpdateRoad()
     {
-        Path path = GetComponent<PathCreator>().path;
+        Path1 path = GetComponent<PathCreator>().path;
         Vector2[] points = path.CalculateEvenlySpacedPoints(spacing);
         GetComponent<MeshFilter>().mesh = CreateRoadMesh(points, path.IsClosed);
 

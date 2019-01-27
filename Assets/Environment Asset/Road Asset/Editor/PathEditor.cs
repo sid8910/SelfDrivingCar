@@ -7,7 +7,7 @@ using UnityEditor;
 public class PathEditor : Editor {
 
     PathCreator creator;
-    Path Path
+    Path1 Path
     {
         get
         {

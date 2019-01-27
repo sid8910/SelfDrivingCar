@@ -5,7 +5,7 @@ using UnityEngine;
 public class PathCreator : MonoBehaviour {
 
     [HideInInspector]
-    public Path path;
+    public Path1 path;
 
 	public Color anchorCol = Color.red;
     public Color controlCol = Color.white;
@@ -17,7 +17,7 @@ public class PathCreator : MonoBehaviour {
 
     public void CreatePath()
     {
-        path = new Path(transform.position);
+        path = new Path1(transform.position);
     }
 
     void Reset()

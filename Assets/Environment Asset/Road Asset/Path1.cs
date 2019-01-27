@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class Path {
+public class Path1 {
 
     [SerializeField, HideInInspector]
     List<Vector2> points;
@@ -12,7 +13,7 @@ public class Path {
     [SerializeField, HideInInspector]
     bool autoSetControlPoints;
 
-    public Path(Vector2 centre)
+    public Path1(Vector2 centre)
     {
         points = new List<Vector2>
         {
