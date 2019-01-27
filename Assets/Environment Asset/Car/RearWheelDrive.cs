@@ -54,11 +54,11 @@ public class RearWheelDrive : MonoBehaviour {
         EmitTelemetry(obj);
         JSONObject jsonObject = obj.data;
         string steer_angle = jsonObject.GetField("steer_angle").str;
-        string toq = jsonObject.GetField("steer_angle").str;
+        string toq = jsonObject.GetField("torque").str;
 
         //float stearingAngle = JSONObject.GetField("stearing_angle");
         //float torque = JSONObject.GetField("torque_val");
-        minma(steer_angle, toq);
+        Minma(steer_angle, toq);
     }
 
     void EmitTelemetry(SocketIOEvent obj)
@@ -77,7 +77,7 @@ public class RearWheelDrive : MonoBehaviour {
     // this helps us to figure our which wheels are front ones and which are rear
 
 
-    public void minma(string w_axis, string a_vert)
+    public void Minma(string w_axis, string a_vert)
 	{
 
         //float angle = maxAngle * Input.GetAxis("Horizontal");
