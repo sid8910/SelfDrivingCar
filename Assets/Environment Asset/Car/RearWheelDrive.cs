@@ -1,11 +1,11 @@
 ﻿using UnityEngine;
-using SocketIO;
+//using SocketIO;
 using System.Collections.Generic;
 using System;
 
 public class RearWheelDrive : MonoBehaviour {
 
-    private SocketIOComponent _socket;
+//    private SocketIOComponent _socket;
     public Camera FrontFacingCamera;
 
     private WheelCollider[] wheels;
@@ -18,10 +18,10 @@ public class RearWheelDrive : MonoBehaviour {
 	public void Start()
 	{
 
-        _socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
+/*        _socket = GameObject.Find("SocketIO").GetComponent<SocketIOComponent>();
         _socket.On("open", OnOpen);
         _socket.On("move", OnMove);
-
+*/
         wheels = GetComponentsInChildren<WheelCollider>();
 
 		for (int i = 0; i < wheels.Length; ++i) 
@@ -43,7 +43,7 @@ public class RearWheelDrive : MonoBehaviour {
 	}
 
 
-    void OnOpen(SocketIOEvent obj)
+ /*   void OnOpen(SocketIOEvent obj)
     {
         Debug.Log("Connection Open");
         EmitTelemetry(obj);
@@ -70,7 +70,7 @@ public class RearWheelDrive : MonoBehaviour {
             _socket.Emit("telemetry", new JSONObject(data));
         });
     }
-
+*/
     // this is a really simple approach to updating wheels
     // here we simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero
     // this helps us to figure our which wheels are front ones and which are rear
