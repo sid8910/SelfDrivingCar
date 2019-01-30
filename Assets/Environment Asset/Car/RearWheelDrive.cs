@@ -10,7 +10,7 @@ public class RearWheelDrive : MonoBehaviour {
 
     private WheelCollider[] wheels;
 
-	public float maxAngle = 30;
+	public float maxSteerAngle = 30;
 	public float maxTorque = 300;
 	public GameObject wheelShape;
 
@@ -42,7 +42,6 @@ public class RearWheelDrive : MonoBehaviour {
 		}
 	}
 
-
    void OnOpen(SocketIOEvent obj)
     {
         Debug.Log("Connection Open");
@@ -51,51 +50,27 @@ public class RearWheelDrive : MonoBehaviour {
 
     void OnMove(SocketIOEvent obj)
     {
-        EmitTelemetry(obj);
         JSONObject jsonObject = obj.data;
-        string steer_angle = jsonObject.GetField("steer_angle").str;
-        string toq = jsonObject.GetField("torque").str;
-
-        //float stearingAngle = JSONObject.GetField("stearing_angle");
-        //float torque = JSONObject.GetField("torque_val");
-        Minma(steer_angle, toq);
+        float steerAngle = float.Parse(jsonObject.GetField("steer_angle").str);
+        float torque = float.Parse(jsonObject.GetField("torque").str);
+        Move(steerAngle, torque);
+        EmitTelemetry(obj);
     }
 
-    void EmitTelemetry(SocketIOEvent obj)
-    {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        {
-            Dictionary<string, string> data = new Dictionary<string, string>();
-            data["move"] = "true";
-            data["image"] = Convert.ToBase64String(CameraHelper.CaptureFrame(FrontFacingCamera));
-            _socket.Emit("telemetry", new JSONObject(data));
-        });
-    }
-
-    // this is a really simple approach to updating wheels
-    // here we simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero
-    // this helps us to figure our which wheels are front ones and which are rear
-
-
-    public void Minma(string w_axis, string a_vert)
+    
+    public void Move(float steerAngle, float torque)
 	{
-
-        //float angle = maxAngle * Input.GetAxis("Horizontal");
-        //float torque = maxTorque * Input.GetAxis("Vertical");
-        float flt1 = float.Parse(w_axis);
-        float flt2 = float.Parse(a_vert);
-
-        float angle = maxAngle * flt1;
-        float torque = maxTorque * flt2;
-
-		foreach (WheelCollider wheel in wheels)
+        // this is a really simple approach to updating wheels
+        // here we simulate a rear wheel drive car and assume that the car is perfectly symmetric at local zero
+        // this helps us to figure our which wheels are front ones and which are rear
+        foreach (WheelCollider wheel in wheels)
 		{
 			// a simple car where front wheels steer while rear ones drive
 			if (wheel.transform.localPosition.z > 0)
-				wheel.steerAngle = angle;
+				wheel.steerAngle = steerAngle * maxSteerAngle;
 
 			if (wheel.transform.localPosition.z < 0)
-				wheel.motorTorque = torque;
+				wheel.motorTorque = torque * maxTorque;
 
 			// update visual wheels if any
 			if (wheelShape) 
@@ -112,10 +87,21 @@ public class RearWheelDrive : MonoBehaviour {
 
 		}
 	}
+
+    void EmitTelemetry(SocketIOEvent obj)
+    {
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            data["move"] = "true";
+            data["image"] = Convert.ToBase64String(CameraHelper.CaptureFrame(FrontFacingCamera));
+            _socket.Emit("telemetry", new JSONObject(data));
+        });
+    }
+
     public void OnGUI()
     {
         var rb = GetComponent<Rigidbody>();
-
         GUILayout.Label("Speed: " + rb.velocity);
     }
 }
