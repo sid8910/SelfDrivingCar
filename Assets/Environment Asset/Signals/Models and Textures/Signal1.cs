@@ -9,6 +9,9 @@ public class Signal1 : MonoBehaviour
     public Light spotlightR1;
     public Light spotlightR2;
 
+
+    RearWheelDrive RearWheelDrive1 = new RearWheelDrive();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -28,7 +31,9 @@ public class Signal1 : MonoBehaviour
     {
         while (spotlightG1.intensity == 10f && spotlightG2.intensity == 10f)
         {
+            RearWheelDrive1.SignalColor("Green");
             yield return new WaitForSeconds(5);
+            RearWheelDrive1.SignalColor("Red");
             spotlightG1.intensity = 0f;
             spotlightG2.intensity = 0f;
             spotlightR1.intensity = 10f;

@@ -53,10 +53,10 @@ public class RearWheelDrive : MonoBehaviour {
         JSONObject jsonObject = obj.data;
         float steerAngle = float.Parse(jsonObject.GetField("steer_angle").str);
         float torque = float.Parse(jsonObject.GetField("torque").str);
-        if (Input.GetKey("q"))
-        {
-            ManualControls();
-        }
+        //if (Input.GetKey("q"))
+        //{
+        //    ManualControls();
+        //}
         Move(steerAngle, torque);
         EmitTelemetry(obj);
    }
@@ -105,10 +105,35 @@ public class RearWheelDrive : MonoBehaviour {
 
     private void Update()
     {
-        
+        float angle = maxSteerAngle * Input.GetAxis("Horizontal");
+        float torque = maxTorque * Input.GetAxis("Vertical");
+
+        foreach (WheelCollider wheel in wheels)
+        {
+            // a simple car where front wheels steer while rear ones drive
+            if (wheel.transform.localPosition.z > 0)
+                wheel.steerAngle = angle;
+
+            if (wheel.transform.localPosition.z < 0)
+                wheel.motorTorque = torque;
+
+            // update visual wheels if any
+            if (wheelShape)
+            {
+                Quaternion q;
+                Vector3 p;
+                wheel.GetWorldPose(out p, out q);
+
+                // assume that the only child of the wheelcollider is the wheel shape
+                Transform shapeTransform = wheel.transform.GetChild(0);
+                shapeTransform.position = p;
+                shapeTransform.rotation = q;
+            }
+
+        }
     }
 
-    public void ManualControls()
+/*    public void ManualControls()
     {
         while (Input.GetKey("e"))
         {
@@ -140,10 +165,15 @@ public class RearWheelDrive : MonoBehaviour {
             }
         }
     }
-
+*/
+    public void SignalColor(string x)
+    {
+        print(x);
+    }
+    
     public void OnGUI()
     {
         var rb = GetComponent<Rigidbody>();
-        GUILayout.Label("Speed: " + rb.velocity);
+        //GUILayout.Label("Speed: " + Math.Round(rb.velocity.magnitude * 3.6) + " km/hr");
     }
 }
