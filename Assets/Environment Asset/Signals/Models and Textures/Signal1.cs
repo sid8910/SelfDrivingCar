@@ -31,7 +31,6 @@ public class Signal1 : MonoBehaviour
     {
         while (spotlightG1.intensity == 10f && spotlightG2.intensity == 10f)
         {
-            RearWheelDrive1.SignalColor("Green");
             yield return new WaitForSeconds(5);
             RearWheelDrive1.SignalColor("Red");
             spotlightG1.intensity = 0f;
@@ -39,6 +38,7 @@ public class Signal1 : MonoBehaviour
             spotlightR1.intensity = 10f;
             spotlightR2.intensity = 10f;
             yield return new WaitForSeconds(5);
+            RearWheelDrive1.SignalColor("Green");
             spotlightG1.intensity = 10f;
             spotlightG2.intensity = 10f;
             spotlightR1.intensity = 0f;
